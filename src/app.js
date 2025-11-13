@@ -13,7 +13,7 @@ app.post("/signup", async (req, res) => {
   try {
     await user.save();
   } catch (error) {
-    res.status(404).send("Error in signup: ", error);
+    res.status(404).send("Error in signup: " + error.message);
   }
 
   console.log(req.body);
@@ -62,9 +62,22 @@ app.delete("/user", async (req, res) => {
 app.patch("/user", async (req, res) => {
   const id = req.body.userId;
   const data = req.body;
-  console.log(data);
 
   try {
+    const allowedUpdates = ["userId", "firstName", "lastName", "age", "skills"];
+
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      allowedUpdates.includes(k)
+    );
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update Not Allowed");
+    }
+
+    if (data.skills.length > 10) {
+      throw new Error("Skill must be less than or equala to 10");
+    }
+
     const user = await User.findByIdAndUpdate(id, data, {
       runValidators: true,
     });
@@ -80,7 +93,7 @@ connectDB()
     console.log("Connection Established Successfully...");
 
     app.listen(port, () => {
-      console.log("Server is running on port: ", port);
+      console.log("Server is running on port:",port);
     });
   })
   .catch((err) => {
