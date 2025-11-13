@@ -1,6 +1,9 @@
 import express from "express";
 import { connectDB } from "./config/database.js";
 import User from "./models/user.js";
+import { validateSignUpData } from "./utils/validation.js";
+import bcrypt from "bcrypt";
+import validator from "validator";
 
 const app = express();
 const port = 3000;
@@ -8,17 +11,51 @@ const port = 3000;
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-
   try {
+    validateSignUpData(req);
+
+    const { firstName, lastName, email, password } = req.body;
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashPassword,
+    });
+
     await user.save();
+    res.send("User added successfully...");
   } catch (error) {
     res.status(404).send("Error in signup: " + error.message);
   }
+});
 
-  console.log(req.body);
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  res.send("User added successfully...");
+    if (!validator.isEmail(email)) {
+      throw new Error("Invalid Email");
+    }
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      throw new Error("Invalid Credentials");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new Error("Invalid Credentials");
+    } else {
+      res.send("user login Successfully");
+    }
+  } catch (error) {
+    res.status(400).send(`ERROR : ${error.message}`);
+  }
 });
 
 app.get("/user", async (req, res) => {
@@ -93,7 +130,7 @@ connectDB()
     console.log("Connection Established Successfully...");
 
     app.listen(port, () => {
-      console.log("Server is running on port:",port);
+      console.log("Server is running on port:", port);
     });
   })
   .catch((err) => {
