@@ -53,10 +53,14 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (isPasswordValid) {
-      const token = await jwt.sign({ _id: user._id }, "Durgesh@1511");
+      const token = await jwt.sign({ _id: user._id }, "Durgesh@1511", {
+        expiresIn: "7d",
+      });
       console.log(token);
 
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 7 * 3600000),
+      });
 
       res.send("user login Successfully");
     } else {
@@ -76,7 +80,6 @@ app.get("/profile", userAuth, async (req, res) => {
     res.status(400).send("Error: " + error.message);
   }
 });
-
 
 connectDB()
   .then(() => {
