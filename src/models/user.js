@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
@@ -28,6 +30,11 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      validate(value) {
+        if (!validator.isStrongPassword) {
+          throw new Error("Please enter strong password");
+        }
+      },
     },
     age: {
       type: Number,
@@ -45,6 +52,11 @@ const userSchema = new mongoose.Schema(
     },
     skills: {
       type: [String],
+      validate(value) {
+        if (value.length < 2 || value.length > 10) {
+          throw new Error("Skills must be atleast 2 and atmost 10");
+        }
+      },
     },
     photoUrl: {
       type: String,
@@ -55,10 +67,39 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    about: {
+      type: String,
+      default: "This is the deafult about section",
+      minLength: 25,
+      maxLength: 600,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+userSchema.methods.getJWT = async function () {
+  const user = this;
+
+  const token = await jwt.sign({ _id: user._id }, "Durgesh@1511", {
+    expiresIn: "7d",
+  });
+
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+  const user = this;
+
+  const hashpassword = user.password;
+
+  const isPasswordValid = await bcrypt.compare(
+    passwordInputByUser,
+    hashpassword
+  );
+
+  return isPasswordValid;
+};
 
 export default mongoose.model("User", userSchema);
