@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       validate(value) {
-        if (!validator.isStrongPassword) {
+        if (!validator.isStrongPassword(value)) {
           throw new Error("Please enter strong password");
         }
       },
@@ -43,12 +43,15 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       lowercase: true,
-
-      validate(value) {
-        if (!["male", "female", "others"].includes(value)) {
-          throw new Error("Gender Data is not valid");
-        }
+      enum: {
+        values: ["male", "female", "others"],
+        message: "{VALUE} are not supported",
       },
+      // validate(value) {
+      //   if (!["male", "female", "others"].includes(value)) {
+      //     throw new Error("Gender Data is not valid");
+      //   }
+      // },
     },
     skills: {
       type: [String],
