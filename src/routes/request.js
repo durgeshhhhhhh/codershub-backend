@@ -22,11 +22,11 @@ requestRouter.post(
           .json({ message: "Invalid status type: " + status });
       }
 
-      if (fromUserId.toString() === toUserId.toString()) {
-        return res
-          .status(400)
-          .json({ message: "You cannot send request to yourself" });
-      }
+      // if (fromUserId.toString() === toUserId.toString()) {
+      //   return res
+      //     .status(400)
+      //     .json({ message: "You cannot send request to yourself" });
+      // }
 
       const toUser = await User.findById(toUserId);
       if (!toUser) {
@@ -56,8 +56,15 @@ requestRouter.post(
 
       const data = await connectionRequest.save();
 
+      let message = "";
+      if (status === "interested") {
+        message = `${req.user.firstName} showed interest in ${toUser.firstName}`;
+      } else if (status === "ignored") {
+        message = `${req.user.firstName} ignored ${toUser.firstName}`;
+      }
+
       res.send({
-        message: "Connection Request sent Successfully",
+        message,
         data,
       });
     } catch (error) {
