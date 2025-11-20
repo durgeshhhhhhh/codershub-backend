@@ -13,6 +13,11 @@ authRouter.post("/signup", async (req, res) => {
     const { firstName, lastName, email, password, age, gender, about, skills } =
       req.body;
 
+    const checkForExistingUser = await User.findOne({ email });
+    if (checkForExistingUser) {
+      return res.status(400).send("User already exists with this email");
+    }
+
     const hashPassword = await bcrypt.hash(password, 10);
 
     const user = new User({

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const connectionRequestSchema = new mongoose.Schema.schema(
+const connectionRequestSchema = new mongoose.Schema(
   {
     fromUserId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,5 +23,7 @@ const connectionRequestSchema = new mongoose.Schema.schema(
     timestamps: true,
   }
 );
+
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 }, { unique: true });
 
 export default mongoose.model("ConnectionRequest", connectionRequestSchema);
