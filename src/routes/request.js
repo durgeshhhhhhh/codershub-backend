@@ -103,7 +103,7 @@ requestRouter.post(
 
       connectionRequest.status = status;
 
-      const data = await ConnectionRequest.save();
+      const data = await connectionRequest.save();
 
       res.send({ message: "Connection Request " + status, data });
     } catch (error) {

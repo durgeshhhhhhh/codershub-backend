@@ -7,13 +7,19 @@ const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
+      trim: true,
       required: true,
       minLength: 3,
       maxLength: 50,
+      validate(value) {
+        if (!value.trim()) {
+          throw new Error("First name cannot be empty or spaces only!!");
+        }
+      },
     },
     lastName: {
       type: String,
-      minLength: 3,
+      trim: true,
       maxLength: 50,
     },
     email: {

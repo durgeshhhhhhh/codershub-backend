@@ -20,8 +20,8 @@
 
 ## userRouter
 
+-GET /user/requests/recieved
 -GET /user/connections
--GET /user/requests
 -GET /user/feed - Gets the rpofile of other user on platform
 
 Status: ignore, interested, accepted, rejected
