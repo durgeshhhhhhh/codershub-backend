@@ -2,7 +2,6 @@ import express from "express";
 import { userAuth } from "../middlewares/auth.js";
 import ConnectionRequest from "../models/connectionRequest.js";
 import User from "../models/user.js";
-import mongoose from "mongoose";
 
 export const requestRouter = express.Router();
 
@@ -71,6 +70,44 @@ requestRouter.post(
       res.status(400).json({
         Error: error.message,
       });
+    }
+  }
+);
+
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
+
+      const isAllowedStatus = ["accepted", "rejected"];
+      if (!isAllowedStatus.includes(status)) {
+        return res
+          .status(400)
+          .json({ message: "Invalid status type " + status });
+      }
+
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+
+      if (!connectionRequest) {
+        return res.status(404).json({
+          message: "Connection request not found",
+        });
+      }
+
+      connectionRequest.status = status;
+
+      const data = await ConnectionRequest.save();
+
+      res.send({ message: "Connection Request " + status, data });
+    } catch (error) {
+      res.status(400).send("Error: " + error.message);
     }
   }
 );
