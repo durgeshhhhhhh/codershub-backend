@@ -1,5 +1,5 @@
 import express from "express";
-import { userAuth } from "../middlewares/auth.js";
+import { userAuth } from "../middlewares/userAuth.js";
 import { validateEditProfileData } from "../utils/validation.js";
 import bcrypt from "bcrypt";
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { userAuth } from "../middlewares/auth.js";
+import { userAuth } from "../middlewares/userAuth.js";
 import ConnectionRequest from "../models/connectionRequest.js";
 import User from "../models/user.js";
 
