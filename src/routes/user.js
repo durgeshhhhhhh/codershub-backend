@@ -12,6 +12,7 @@ const USER_SAFE_DATA = [
   "gender",
   "photoUrl",
   "skills",
+  "about",
 ];
 
 userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
