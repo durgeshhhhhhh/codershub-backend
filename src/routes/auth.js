@@ -59,7 +59,7 @@ authRouter.post("/login", async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      throw new Error("Invalid Credentials");
+      throw new Error("User not found! Please sign up first to join CodersHub");
     }
 
     const isPasswordValid = await user.validatePassword(password);
