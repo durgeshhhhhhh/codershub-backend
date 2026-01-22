@@ -12,7 +12,7 @@ const port = 3000;
 
 app.use(
   cors({
-    origin:  "https://joincodershub.com",
+    origin: ["http://localhost:5173", "https://joincodershub.com"],
     credentials: true,
   })
 );
