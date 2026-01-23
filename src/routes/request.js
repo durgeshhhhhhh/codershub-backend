@@ -2,6 +2,7 @@ import express from "express";
 import { userAuth } from "../middlewares/userAuth.js";
 import ConnectionRequest from "../models/connectionRequest.js";
 import User from "../models/user.js";
+import * as sendEmail from "../utils/sendEmail.js";
 
 export const requestRouter = express.Router();
 
@@ -54,6 +55,10 @@ requestRouter.post(
       });
 
       const data = await connectionRequest.save();
+
+      const emailRes = await sendEmail.run();
+
+      console.log(emailRes);
 
       let message = "";
       if (status === "interested") {
