@@ -3,9 +3,34 @@ import { sesClient } from "./SESClient.js";
 
 const FROM_ADDRESS = "CodersHub <mail@joincodershub.com>";
 
-const buildEmailBody = ({ recipientName, requesterName }) => {
+const getEmailContent = (type, { recipientName, requesterName }) => {
   const safeRecipient = recipientName || "there";
   const safeRequester = requesterName || "A CodersHub member";
+
+  const isReminder = type === "reminder";
+
+  return {
+    icon: isReminder ? "👋" : "🤝",
+    title: isReminder ? "You Have Pending Requests!" : "New Connection Request!",
+    message: isReminder
+      ? "Developers are waiting to connect with you on CodersHub! Don't keep them waiting - check out your pending requests and start collaborating today."
+      : `<strong style="color: #f1f5f9;">${safeRequester}</strong> wants to connect with you on CodersHub! They're interested in collaborating and building something awesome together.`,
+    buttonText: isReminder ? "View Requests" : "View Request",
+    footerNote: isReminder
+      ? "Your next collaboration could be one click away!"
+      : "Don't miss out on potential collaborations!",
+    subject: isReminder
+      ? "You have pending connection requests on CodersHub!"
+      : `${safeRequester} wants to connect on CodersHub`,
+    textVersion: isReminder
+      ? `Hey ${safeRecipient}! Developers are waiting to connect with you on CodersHub. Check out your pending requests at https://joincodershub.com/requests - Team CodersHub`
+      : `Hey ${safeRecipient}! ${safeRequester} wants to connect with you on CodersHub. Visit https://joincodershub.com/requests to respond. - Team CodersHub`,
+    recipientName: safeRecipient,
+  };
+};
+
+const buildEmailBody = (type, { recipientName, requesterName }) => {
+  const content = getEmailContent(type, { recipientName, requesterName });
 
   return {
     html: `
@@ -41,30 +66,29 @@ const buildEmailBody = ({ recipientName, requesterName }) => {
                     <!-- Icon -->
                     <div style="text-align: center; margin-bottom: 24px;">
                       <div style="display: inline-block; background-color: #22d3ee; border-radius: 50%; padding: 16px; width: 40px; height: 40px;">
-                        <span style="font-size: 40px; line-height: 1;">🤝</span>
+                        <span style="font-size: 40px; line-height: 1;">${content.icon}</span>
                       </div>
                     </div>
                     
                     <!-- Title -->
                     <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 600; color: #f1f5f9; text-align: center;">
-                      New Connection Request!
+                      ${content.title}
                     </h2>
                     
                     <!-- Message -->
                     <p style="margin: 0 0 24px; font-size: 16px; line-height: 1.6; color: #cbd5e1; text-align: center;">
-                      Hey <strong style="color: #22d3ee;">${safeRecipient}</strong>,
+                      Hey <strong style="color: #22d3ee;">${content.recipientName}</strong>,
                     </p>
                     
                     <p style="margin: 0 0 32px; font-size: 16px; line-height: 1.6; color: #cbd5e1; text-align: center;">
-                      <strong style="color: #f1f5f9;">${safeRequester}</strong> wants to connect with you on CodersHub! 
-                      They're interested in collaborating and building something awesome together.
+                      ${content.message}
                     </p>
                     
                     <!-- CTA Button -->
                     <div style="text-align: center; margin-bottom: 32px;">
                       <a href="https://joincodershub.com/requests" 
                          style="display: inline-block; background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%); color: #0f172a; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                        View Request
+                        ${content.buttonText}
                       </a>
                     </div>
                     
@@ -73,7 +97,7 @@ const buildEmailBody = ({ recipientName, requesterName }) => {
                     
                     <!-- Footer text -->
                     <p style="margin: 0; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5;">
-                      Don't miss out on potential collaborations!<br>
+                      ${content.footerNote}<br>
                       Connect, code, and create together on CodersHub.
                     </p>
                     
@@ -102,71 +126,41 @@ const buildEmailBody = ({ recipientName, requesterName }) => {
 </body>
 </html>
     `,
-    text: `Hey ${safeRecipient}! ${safeRequester} wants to connect with you on CodersHub. They're interested in collaborating and building something awesome together. Visit https://joincodershub.com/requests to view the request and respond. - Team CodersHub`,
+    text: content.textVersion,
+    subject: content.subject,
   };
 };
 
-const createSendEmailCommand = ({
-  toAddress,
-  fromAddress,
-  recipientName,
-  requesterName,
-}) => {
-  const { html, text } = buildEmailBody({ recipientName, requesterName });
+const run = async ({ type = "request", toAddress, recipientName, requesterName }) => {
+  // TODO: Remove this override once SES production access is granted
+  const finalToAddress = "durgeshs.dev15@gmail.com";
 
-  return new SendEmailCommand({
+  const { html, text, subject } = buildEmailBody(type, { recipientName, requesterName });
+
+  const sendEmailCommand = new SendEmailCommand({
     Destination: {
       CcAddresses: [],
-      ToAddresses: [toAddress],
+      ToAddresses: [finalToAddress],
     },
     Message: {
       Body: {
-        Html: {
-          Charset: "UTF-8",
-          Data: html,
-        },
-        Text: {
-          Charset: "UTF-8",
-          Data: text,
-        },
+        Html: { Charset: "UTF-8", Data: html },
+        Text: { Charset: "UTF-8", Data: text },
       },
-      Subject: {
-        Charset: "UTF-8",
-        Data: `${requesterName || "Someone"} wants to connect on CodersHub`,
-      },
+      Subject: { Charset: "UTF-8", Data: subject },
     },
-    Source: fromAddress,
+    Source: FROM_ADDRESS,
     ReplyToAddresses: [],
-  });
-};
-
-const run = async ({ toAddress, recipientName, requesterName }) => {
-  // TODO: Remove this override once SES production access is granted
-  // In sandbox mode, mail@joincodershub.com can only send to verified emails
-
-  const finalToAddress = toAddress || "durgeshs.dev15@gmail.com";
-
-  if (!finalToAddress) {
-    throw new Error("Recipient email is required to send the request email.");
-  }
-
-  const sendEmailCommand = createSendEmailCommand({
-    toAddress: finalToAddress,
-    fromAddress: FROM_ADDRESS,
-    recipientName,
-    requesterName,
   });
 
   try {
     return await sesClient.send(sendEmailCommand);
   } catch (caught) {
     if (caught instanceof Error && caught.name === "MessageRejected") {
-      const messageRejectedError = caught;
-      return messageRejectedError;
+      return caught;
     }
     throw caught;
   }
 };
 
-// snippet-end:[ses.JavaScript.email.sendEmailV3]
 export { run };

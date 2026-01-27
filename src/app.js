@@ -7,6 +7,7 @@ import { profileRouter } from "./routes/profile.js";
 import { requestRouter } from "./routes/request.js";
 import { userRouter } from "./routes/user.js";
 import cors from "cors";
+import "./utils/cronjob.js";
 
 const app = express();
 const port = process.env.PORT;

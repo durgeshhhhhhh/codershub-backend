@@ -1,8 +1,5 @@
-// snippet-start:[ses.JavaScript.createclientv3]
 import { SESClient } from "@aws-sdk/client-ses";
-// Set the AWS Region.
 const REGION = "ap-south-1";
-// Create SES service object.
 const sesClient = new SESClient({
   region: REGION,
   credentials: {
@@ -11,4 +8,3 @@ const sesClient = new SESClient({
   },
 });
 export { sesClient };
-// snippet-end:[ses.JavaScript.createclientv3]
