@@ -56,9 +56,15 @@ requestRouter.post(
 
       const data = await connectionRequest.save();
 
-      const emailRes = await sendEmail.run();
+      if (status === "interested") {
+        const emailRes = await sendEmail.run({
+          toAddress: toUser.email,
+          recipientName: toUser.firstName,
+          requesterName: req.user.firstName,
+        });
 
-      console.log(emailRes);
+        console.log(emailRes);
+      }
 
       let message = "";
       if (status === "interested") {
