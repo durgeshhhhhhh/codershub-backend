@@ -64,3 +64,16 @@
         - we can explore queue mechanism to send bulk emails
         - Another option is Amazon SES Bulk Emails
         - Two NPM packages : bee-queue & bull
+
+# Razorpay Payment Gateway Integration
+        - Sign Up on Razorpay and complete KYC
+        - Created a UI for premium page
+        - Creating an API for create order in backend
+        - Added key and secrets in env file
+        - Initialized Razorpay in utils 
+        - Creating order on razorpay
+        - create schema and model
+        - saved the order in payment collection
+        - make the API dynamic
+        - setup Razorpay webhook on live API
+        - 

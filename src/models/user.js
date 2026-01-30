@@ -83,6 +83,19 @@ const userSchema = new mongoose.Schema(
       minLength: 25,
       maxLength: 600,
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    membershipType: {
+      type: String,
+      default: "Free",
+      enum: ["Free", "Silver", "Gold"],
+    },
+    // membershipExpiry: {
+    //   type: Date,
+    //   default: null,
+    // },
   },
   {
     timestamps: true,
