@@ -37,8 +37,6 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 
     const savedPayment = await payment.save();
 
-    // console.log(payment);
-
     res.json({
       message: "Payment created successfully",
       data: savedPayment,
@@ -54,7 +52,6 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 paymentRouter.post("/payment/webhook", async (req, res) => {
   try {
     const webhookSignature = req.get("x-razorpay-signature");
-    console.log("webhookSignature:", webhookSignature);
 
     const isWebhookValid = validateWebhookSignature(
       JSON.stringify(req.body),
@@ -71,10 +68,8 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     // const { event, data } = req.body;
 
     const paymentDetails = req.body.payload.payment.entity;
-    console.log("paymentDetails:", paymentDetails);
-
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
-    console.log("payment:", payment);
+
     if (!payment) {
       return res.status(404).json({
         error: "Payment not found",
@@ -82,11 +77,9 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     }
 
     payment.status = paymentDetails.status;
-    console.log("payment status updated to:", payment.status);
     await payment.save();
 
     const user = await User.findOne({ _id: payment.userId });
-    console.log("user:", user);
     if (!user) {
       return res.status(404).json({
         error: "User not found",
