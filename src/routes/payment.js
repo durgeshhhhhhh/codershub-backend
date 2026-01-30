@@ -68,9 +68,10 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
       });
     }
 
-    const { event, data } = req.body;
+    // const { event, data } = req.body;
 
-    const paymentDetails = data.payload.payment.entity;
+    const paymentDetails = req.body.payload.payment.entity;
+    console.log(paymentDetails);
 
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
     if (!payment) {
@@ -80,6 +81,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     }
 
     payment.status = paymentDetails.status;
+    console.log("payment status updated to:", payment.status);
     await payment.save();
 
     const user = await User.findOne({ _id: payment.userId });
