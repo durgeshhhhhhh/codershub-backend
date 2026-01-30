@@ -80,7 +80,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
       });
     }
 
-    payment.status = paymentDetails.status;
+    Payment.status = paymentDetails.status;
     console.log("payment status updated to:", payment.status);
     await payment.save();
 
