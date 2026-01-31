@@ -3,9 +3,7 @@ import { subDays, startOfDay, endOfDay } from "date-fns";
 import ConnectionRequest from "../models/connectionRequest.js";
 import * as sendEmail from "./sendEmail.js";
 
-cron.schedule("00 09 * * *", async () => {
-  // console.log(new Date().toISOString());
-
+cron.schedule("00 10 * * *", async () => {
   try {
     const yesterday = subDays(new Date(), 1);
     const yesterdayStart = startOfDay(yesterday);
@@ -18,7 +16,7 @@ cron.schedule("00 09 * * *", async () => {
     const sentEmails = new Set();
 
     for (const request of pendingRequests) {
-      const toUser = request.toUserId; 
+      const toUser = request.toUserId;
 
       if (sentEmails.has(toUser.email)) continue;
       sentEmails.add(toUser.email);
