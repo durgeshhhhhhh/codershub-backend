@@ -21,6 +21,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
@@ -28,6 +29,7 @@
     "mongoose": "^8.19.3",
     "node-cron": "^4.2.1",
     "razorpay": "^2.9.6",
+    "socket.io": "^4.8.3",
     "validator": "^13.15.23"
   },
   "devDependencies": {

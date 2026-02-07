@@ -1,4 +1,5 @@
-- Backend
+# Backend
+
         - Allowed ec2 instance public IP on mongodb server
         - npm install pm-2 -g
         - pm2 start npm --name "codershub-backend" -- start
@@ -30,16 +31,14 @@
                  proxy_cache_bypass $http_upgrade;
             }
 
-
 # Adding a custom Domain name
 
         - purchased domain name from godaddy
         - signup on cludflare & add a new domain name
         - change the nameservers on godaddy and point it to cloudflare
         - wait for sometimes till your nameservers are updated
-        - DNS record: A joincodershub.com 
+        - DNS record: A joincodershub.com
         - Enable SSL for website [Full (strict)]
-
 
 # Sending Emails via SES
 
@@ -55,25 +54,41 @@
         - Add the credentials to the .env file
 
 # Scheduling cron jobs in NOdeJs
+
         - Installing node-cron
         - Learning about cron expressions syntax - crontab.guru
         - Schedule a job
         - date-fns
-        - find all the unique email Id who have got connection Request in previous day 
+        - find all the unique email Id who have got connection Request in previous day
         - send Email
         - we can explore queue mechanism to send bulk emails
         - Another option is Amazon SES Bulk Emails
         - Two NPM packages : bee-queue & bull
 
 # Razorpay Payment Gateway Integration
+
         - Sign Up on Razorpay and complete KYC
         - Created a UI for premium page
         - Creating an API for create order in backend
         - Added key and secrets in env file
-        - Initialized Razorpay in utils 
+        - Initialized Razorpay in utils
         - Creating order on razorpay
         - create schema and model
         - saved the order in payment collection
         - make the API dynamic
         - setup Razorpay webhook on live API
-        - 
+
+# Real Time Chat using websocket(Socket.io)
+        - Build the UI for chat window on /chat/:targetUserId
+        - setup socket.io in Backend => npm i socket.io
+        - import http from "http"
+        - created a server
+        - import Server from socket.io
+        - cors configuaration on server 
+        - start listening to connections => io.on("connection", (socket) => {Handle Events})
+        - setup socket.io in the Frontend => npm i socket.io-client
+        - Inside socket.js =>  import io from socket.io-client
+        - connect the socket with backend 
+        - Inside Chat.js => as soon as page loaded, the socket connections is made  joinChat evet is emitted
+        - As page unloads or unmounts dissconnect the socket
+

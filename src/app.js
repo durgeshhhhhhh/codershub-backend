@@ -9,6 +9,9 @@ import { userRouter } from "./routes/user.js";
 import cors from "cors";
 import "./utils/cronjob.js";
 import { paymentRouter } from "./routes/payment.js";
+import http from "http";
+import initializeSocket from "./utils/socket.js";
+import { chatRouter } from "./routes/chat.js";
 
 const app = express();
 const port = process.env.PORT;
@@ -27,12 +30,16 @@ app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/", paymentRouter);
+app.use("/", chatRouter)
+
+const server = http.createServer(app);
+initializeSocket(server);
 
 connectDB()
   .then(() => {
     console.log("Connection Established Successfully...");
 
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log("Server is running on port:", port);
     });
   })
